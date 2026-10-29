@@ -1,0 +1,29 @@
+{
+  "week": "YYYY-Www",
+  "slug": "kebab-case-slug",
+  "title": "",
+  "category": {
+    "id": 9,
+    "name": "技巧分享"
+  },
+  "status": "draft",
+  "created": "",
+  "published_at": null,
+  "forum_topic_id": null,
+  "forum_url": null,
+  "draft_sequence": null,
+  "files": {
+    "source": "post.md",
+    "online": "post.online.md"
+  },
+  "video": {
+    "inline": null,
+    "master": null,
+    "duration_sec": null,
+    "forum_short_url": null
+  },
+  "assets": [],
+  "extra_assets": [],
+  "related_repo": null,
+  "tags": []
+}

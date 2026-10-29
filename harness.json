@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "project": "weekly-shares",
+  "target_branch": "main",
+  "cadence": "weekly",
+  "publish": {
+    "platform": "discourse",
+    "base_url": "https://forum.trae.cn",
+    "default_category": 9,
+    "draft_first": true,
+    "require_human_confirmation": true,
+    "tool": "tools/trae-forum.ps1"
+  },
+  "github_sync": {
+    "policy_version": "v1",
+    "enabled": true,
+    "mode": "sanitized_snapshot",
+    "repository": "TeddyLiu0717/weekly-shares",
+    "target_branch": "main",
+    "executor": "GitHub",
+    "trigger": "verified_closeout",
+    "source_profile": "committed_snapshot",
+    "verification_workspace": "isolated_git_copy"
+  }
+}

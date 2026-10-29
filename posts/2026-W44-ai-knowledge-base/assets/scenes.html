@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --ink:#0f172a; --ink2:#1e293b; --mut:#64748b; --line:#e2e8f0;
+    --bg:#f8fafc; --card:#ffffff;
+    --violet:#7c3aed; --blue:#4f46e5; --sky:#0ea5e9; --emer:#10b981; --amber:#f59e0b; --rose:#f43f5e;
+  }
+  html,body{ width:1920px; height:1080px; overflow:hidden;
+    font-family:"Microsoft YaHei UI","Microsoft YaHei","Segoe UI",sans-serif; color:var(--ink); }
+  .stage{ width:1920px; height:1080px; position:relative; }
+  .dark{ background:radial-gradient(1200px 700px at 75% -10%, #312e81 0%, #1e1b4b 42%, #0b1020 100%); color:#e2e8f0; }
+  .light{ background:var(--bg); }
+  .pad{ padding:88px 110px; }
+  .kicker{ font-size:30px; letter-spacing:6px; color:#a5b4fc; font-weight:700; }
+  h1.big{ font-size:96px; line-height:1.18; font-weight:800; margin-top:26px; letter-spacing:1px; }
+  h2.sec{ font-size:56px; font-weight:800; margin-bottom:54px; }
+  .grad-text{ background:linear-gradient(90deg,#a78bfa,#60a5fa,#34d399); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .chips{ display:flex; gap:22px; margin-top:64px; }
+  .chip{ background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:18px;
+    padding:26px 38px; backdrop-filter:blur(6px); }
+  .chip .n{ font-size:58px; font-weight:800; color:#a78bfa; }
+  .chip .l{ font-size:24px; color:#c7d2fe; margin-top:6px; }
+  .foottag{ position:absolute; left:110px; bottom:64px; font-size:24px; color:#818cf8; letter-spacing:2px; }
+
+  .cards3{ display:grid; grid-template-columns:repeat(3,1fr); gap:34px; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:24px; padding:44px 40px;
+    box-shadow:0 18px 50px -24px rgba(15,23,42,.25); }
+  .card .ico{ font-size:52px; }
+  .card h3{ font-size:34px; margin:18px 0 14px; }
+  .card p{ font-size:25px; color:var(--mut); line-height:1.6; }
+
+  /* architecture */
+  .layers{ display:flex; flex-direction:column; gap:26px; }
+  .layer{ display:flex; align-items:center; gap:34px; border-radius:22px; padding:30px 40px; color:#fff;
+    box-shadow:0 14px 40px -18px rgba(0,0,0,.5); }
+  .layer .tag{ font-size:22px; opacity:.85; width:230px; flex:none; }
+  .layer .name{ font-size:38px; font-weight:800; width:360px; flex:none; }
+  .layer .desc{ font-size:24px; opacity:.92; }
+  .l1{ background:linear-gradient(90deg,#0f766e,#14b8a6); }
+  .l2{ background:linear-gradient(90deg,#4338ca,#6366f1); }
+  .l3{ background:linear-gradient(90deg,#1d4ed8,#3b82f6); }
+  .l4{ background:linear-gradient(90deg,#7c2d12,#ea580c); }
+  .arrow-d{ text-align:center; font-size:34px; color:#a5b4fc; line-height:1; margin:-12px 0; }
+  .side{ position:absolute; right:110px; top:210px; width:420px; background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.2); border-radius:22px; padding:30px 32px; }
+  .side h4{ font-size:28px; color:#fde68a; margin-bottom:14px; }
+  .side li{ font-size:22px; line-height:1.9; color:#cbd5e1; list-style:none; }
+  .side li::before{ content:"▸ "; color:#a78bfa; }
+
+  /* pipeline */
+  .flow{ display:flex; align-items:stretch; gap:0; margin-top:10px; }
+  .step{ flex:1; background:#fff; border:2px solid #c7d2fe; border-radius:22px; padding:34px 28px; text-align:center;
+    box-shadow:0 14px 40px -22px rgba(67,56,202,.4); position:relative; }
+  .step .n{ width:58px; height:58px; border-radius:50%; background:#4f46e5; color:#fff; font-size:30px; font-weight:800;
+    display:flex; align-items:center; justify-content:center; margin:0 auto 18px; }
+  .step h3{ font-size:32px; margin-bottom:10px; }
+  .step p{ font-size:21px; color:var(--mut); line-height:1.5; }
+  .rarr{ display:flex; align-items:center; font-size:52px; color:#818cf8; padding:0 10px; }
+  .states{ display:flex; gap:16px; margin-top:46px; flex-wrap:wrap; }
+  .st{ font-size:22px; padding:12px 24px; border-radius:999px; font-weight:700; }
+  .s-gray{ background:#f1f5f9; color:#64748b; } .s-blue{ background:#dbeafe; color:#1d4ed8; }
+  .s-amber{ background:#fef3c7; color:#b45309; } .s-green{ background:#d1fae5; color:#047857; }
+
+  /* chat */
+  .bubble{ max-width:1200px; border-radius:26px; padding:34px 42px; font-size:34px; line-height:1.55; margin-bottom:34px; }
+  .b-user{ background:linear-gradient(90deg,#4f46e5,#7c3aed); color:#fff; margin-left:auto; border-bottom-right-radius:6px; }
+  .b-ai{ background:#fff; border:1px solid var(--line); border-bottom-left-radius:6px;
+    box-shadow:0 14px 40px -24px rgba(15,23,42,.3); }
+  .b-ai .mono{ font-family:Consolas,monospace; background:#f1f5f9; padding:2px 12px; border-radius:8px; color:#4338ca; }
+  .b-ai small{ display:block; margin-top:14px; font-size:23px; color:var(--mut); }
+
+  /* obsidian mock */
+  .obs{ width:100%; height:100%; background:#1e1e2e; display:flex; flex-direction:column; }
+  .titlebar{ height:64px; background:#181825; display:flex; align-items:center; padding:0 28px; gap:14px; }
+  .dot{ width:15px; height:15px; border-radius:50%; }
+  .tab{ margin-left:30px; color:#cdd6f4; font-size:22px; background:#313244; padding:9px 26px; border-radius:10px 10px 0 0; }
+  .obody{ flex:1; display:flex; }
+  .oside{ width:330px; background:#181825; border-right:1px solid #313244; padding:24px 20px; color:#cdd6f4; }
+  .oside h5{ font-size:20px; color:#7f849c; margin:18px 0 10px; font-weight:600; }
+  .file{ font-size:21px; padding:7px 12px; border-radius:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .file.act{ background:#313244; color:#cba6f7; }
+  .file .em{ color:#f9e2af; }
+  .omain{ flex:1; background:#1e1e2e; padding:52px 70px; overflow:hidden; }
+  .odoc{ background:#1e1e2e; color:#cdd6f4; font-size:25px; line-height:1.75; max-width:1050px; }
+  .odoc h1{ font-size:44px; color:#cdd6f4; margin-bottom:8px; }
+  .odoc .meta{ color:#7f849c; font-size:19px; margin-bottom:26px; font-family:Consolas,monospace; }
+  .odoc h2{ font-size:29px; color:#89b4fa; margin:24px 0 10px; }
+  .odoc table{ border-collapse:collapse; width:100%; font-size:21px; }
+  .odoc td{ border:1px solid #45475a; padding:9px 16px; }
+  .odoc .autol{ border-left:4px solid #a6e3a1; background:rgba(166,227,161,.07); padding:4px 0 4px 18px; margin:6px 0; }
+  .odoc .lk{ color:#cba6f7; } .odoc ol{ padding-left:34px; } .odoc li{ margin:4px 0; }
+  .oright{ width:330px; background:#181825; border-left:1px solid #313244; padding:28px 22px; color:#cdd6f4; }
+  .oright h5{ font-size:20px; color:#7f849c; margin-bottom:12px; }
+  .bl{ font-size:20px; padding:6px 8px; color:#89b4fa; }
+  .oright .unlinked{ color:#f38ba8; }
+
+  /* terminal */
+  .term{ background:#0c0a1d; border-radius:20px; border:1px solid #312e81; overflow:hidden;
+    box-shadow:0 40px 90px -30px rgba(0,0,0,.8); margin-top:20px; }
+  .termbar{ background:#1e1b4b; padding:18px 28px; display:flex; align-items:center; gap:10px; }
+  .termbar .ttl{ margin-left:20px; color:#a5b4fc; font-size:22px; }
+  .termbody{ padding:36px 44px; font-family:Consolas,"Courier New",monospace; font-size:27px; line-height:1.62; color:#cbd5e1; }
+  .ps{ color:#34d399; } .cmd{ color:#f0abfc; } .ok{ color:#34d399; font-weight:700; }
+  .warn{ color:#fbbf24; } .dim{ color:#94a3b8; }
+
+  .rules{ display:grid; grid-template-columns:repeat(3,1fr); gap:34px; margin-top:30px; }
+  .rule{ border-radius:24px; padding:46px 40px; color:#fff; min-height:430px; }
+  .rule .big{ font-size:88px; font-weight:900; opacity:.25; }
+  .rule h3{ font-size:36px; margin:8px 0 18px; }
+  .rule p{ font-size:24px; line-height:1.65; opacity:.95; }
+  .r1{ background:linear-gradient(160deg,#0f766e,#0d9488); }
+  .r2{ background:linear-gradient(160deg,#6d28d9,#7c3aed); }
+  .r3{ background:linear-gradient(160deg,#b45309,#f59e0b); }
+
+  .endbox{ margin-top:70px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.2);
+    border-radius:26px; padding:54px 60px; }
+  .ghline{ font-family:Consolas,monospace; font-size:38px; color:#6ee7b7; margin:22px 0; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage"></div>
+<script>
+const q = +new URLSearchParams(location.search).get('scene');
+
+function obsShell(inner, rightTab){
+  return `<div class="obs">
+    <div class="titlebar">
+      <div class="dot" style="background:#f38ba8"></div><div class="dot" style="background:#f9e2af"></div><div class="dot" style="background:#a6e3a1"></div>
+      <div class="tab">RAG综述-给普通人的检索增强生成指南.md</div>
+    </div>
+    <div class="obody">
+      <div class="oside">
+        <h5>知识库</h5>
+        <div class="file">📁 raw <span class="em">/web</span></div>
+        <div class="file">📁 wiki</div>
+        <div class="file" style="padding-left:34px">📁 sources</div>
+        <div class="file act" style="padding-left:58px">📄 RAG综述…</div>
+        <div class="file" style="padding-left:34px">📁 concepts</div>
+        <div class="file" style="padding-left:58px">📄 检索增强生成</div>
+        <div class="file" style="padding-left:58px">📄 知识图谱</div>
+        <div class="file" style="padding-left:34px">📁 entities</div>
+        <div class="file" style="padding-left:58px">📄 Obsidian</div>
+        <div class="file" style="padding-left:34px">📁 topics</div>
+        <div class="file" style="padding-left:58px">📄 AI知识库搭建</div>
+        <div class="file" style="padding-left:34px">📄 index.md</div>
+        <div class="file" style="padding-left:34px">📄 log.md</div>
+      </div>
+      <div class="omain"><div class="odoc">${inner}</div></div>
+      <div class="oright">${rightTab}</div>
+    </div></div>`;
+}
+
+const scenes = [
+// 0 cover
+`<div class="stage dark pad">
+  <div class="kicker">OBSIDIAN × AI AGENT · 个人知识库实战</div>
+  <h1 class="big">我让 AI 帮我<br><span class="grad-text">「养」一个知识库</span></h1>
+  <div style="font-size:34px;color:#c7d2fe;margin-top:34px;line-height:1.6">不写系统、不买 SaaS：纯 Markdown 文件夹 + 一份维护协议，<br>让智能体每天自动捕获、编译、对账，知识自己长大。</div>
+  <div class="chips">
+    <div class="chip"><div class="n">4000+</div><div class="l">来源摘要页</div></div>
+    <div class="chip"><div class="n">2 阶段</div><div class="l">捕获 / 编译</div></div>
+    <div class="chip"><div class="n">0 手工</div><div class="l">日常增量维护</div></div>
+    <div class="chip"><div class="n">100%</div><div class="l">本地 Markdown</div></div>
+  </div>
+  <div class="foottag">▸ 完整搭建步骤 + 脚手架在文末</div>
+</div>`,
+
+// 1 pain points
+`<div class="stage light pad">
+  <div class="kicker" style="color:#4f46e5">WHY</div>
+  <h2 class="sec">为什么收藏了那么多，还是没有知识？</h2>
+  <div class="cards3">
+    <div class="card"><div class="ico">🗂️</div><h3>收藏即吃灰</h3><p>微信、网页、飞书、视频散落各处，存了几百条，要用时一条都找不到。</p></div>
+    <div class="card"><div class="ico">🤖</div><h3>RAG 问完就忘</h3><p>向量问答是一次性的：这次答完，知识没有沉淀成结构，文档之间也没有关系。</p></div>
+    <div class="card"><div class="ico">✍️</div><h3>手整理坚持两周</h3><p>分类、打标签、写摘要全靠人肉，断更一天，后面就再也不想打开。</p></div>
+  </div>
+  <div style="margin-top:56px;font-size:32px;color:#334155">思路转变：<b>别让 AI 只回答问题，让它按协议长期「维护」一个文件夹。</b></div>
+</div>`,
+
+// 2 architecture
+`<div class="stage dark pad" style="padding-right:600px">
+  <div class="kicker">ARCHITECTURE</div>
+  <h2 class="sec" style="margin-bottom:40px">四层架构：各层只做一件事</h2>
+  <div class="layers">
+    <div class="layer l4"><div class="tag">第 4 层 · 阅读</div><div class="name">Obsidian</div><div class="desc">双链、关系图谱、反向链接，纯阅读与导航</div></div>
+    <div class="arrow-d">▲ 人只在这里活动</div>
+    <div class="layer l3"><div class="tag">第 3 层 · 索引/状态</div><div class="name">index + log + 注册表</div><div class="desc">页面注册、变更日志、对象状态机与对账</div></div>
+    <div class="arrow-d">▲ 过质量门后 Promote</div>
+    <div class="layer l2"><div class="tag">第 2 层 · 知识</div><div class="name">wiki/</div><div class="desc">sources · concepts · entities · topics，双链成网</div></div>
+    <div class="arrow-d">▲ 编译（Ingest）</div>
+    <div class="layer l1"><div class="tag">第 1 层 · 证据</div><div class="name">raw/ 只读</div><div class="desc">原文/转写/附件，只追加、永不改写</div></div>
+  </div>
+  <div class="side">
+    <h4>🤖 AI 智能体的角色</h4>
+    <ul>
+      <li>读 AGENTS.md 协议上岗</li>
+      <li>「入库」→ 写 raw 证据</li>
+      <li>「编译」→ 生成 wiki 页</li>
+      <li>每次改动更新 index/log</li>
+      <li>过质量门才算完成</li>
+    </ul>
+  </div>
+</div>`,
+
+// 3 pipeline
+`<div class="stage light pad">
+  <div class="kicker" style="color:#4f46e5">PIPELINE</div>
+  <h2 class="sec" style="margin-bottom:40px">一条流水线，把资料变成可回溯的知识</h2>
+  <div class="flow">
+    <div class="step"><div class="n">1</div><h3>发现</h3><p>信息源扫描<br>去重登记</p></div>
+    <div class="rarr">→</div>
+    <div class="step"><div class="n">2</div><h3>Capture</h3><p>原文入 raw/<br>附件逐项检查</p></div>
+    <div class="rarr">→</div>
+    <div class="step"><div class="n">3</div><h3>Ingest</h3><p>来源摘要→概念<br>/实体/主题+双链</p></div>
+    <div class="rarr">→</div>
+    <div class="step"><div class="n">4</div><h3>质量门</h3><p>断链/空摘要/<br>AUTO 块/索引</p></div>
+    <div class="rarr">→</div>
+    <div class="step" style="border-color:#34d399"><div class="n" style="background:#059669">5</div><h3>Promote</h3><p>进入正式 wiki<br>更新索引日志</p></div>
+  </div>
+  <div class="states">
+    <span class="st s-gray">discovered</span><span class="st s-blue">metadata_captured</span>
+    <span class="st s-blue">content_captured</span><span class="st s-amber">partial / blocked</span>
+    <span class="st s-green">complete ✓</span>
+  </div>
+  <div style="margin-top:40px;font-size:26px;color:#64748b">blocked 必须写明原因（权限/原文缺失），<b style="color:#f43f5e">禁止为了数字好看把 partial 报成 complete</b>。</div>
+</div>`,
+
+// 4 chat two verbs
+`<div class="stage light pad">
+  <div class="kicker" style="color:#4f46e5">DAILY USE</div>
+  <h2 class="sec" style="margin-bottom:46px">日常只用两个中文动词</h2>
+  <div class="bubble b-user">把这篇文章<b>入库</b>，下周做竞品分析要用。</div>
+  <div class="bubble b-ai">已入库：<span class="mono">raw/web/rag-guide-2026.md</span><br>状态：captured（原文与链接已留存，附件 0）<small>▸ Capture 阶段只存原文，不动 wiki</small></div>
+  <div class="bubble b-user">把待编译的资料<b>编译</b>一下。</div>
+  <div class="bubble b-ai">已编译：1 篇　新增：来源 1 ｜ 概念 2 ｜ 实体 1 ｜ 主题 1<br>标记：推断 1 ｜ 待核实 1　索引/日志：已更新　体检：<span style="color:#059669;font-weight:800">通过</span><small>▸ 单批 ≤ 10 篇，先出计划再写入，已有页面只补充不重建</small></div>
+</div>`,
+
+// 5 obsidian UI
+obsShell(`
+  <h1>RAG 综述：给普通人的检索增强生成指南</h1>
+  <div class="meta">type: source-summary · updated: 2026-10-28 · raw/web/rag-guide-2026.md</div>
+  <h2>内容摘要</h2>
+  <div class="autol">一篇面向非技术读者的 RAG 科普，指出纯 RAG「只问答、不沉淀」的结构性短板，引出笔记优先的知识库思路。</div>
+  <h2>核心观点</h2>
+  <div class="autol"><ol>
+    <li>RAG = 回答前先检索片段，可显著降低幻觉</li>
+    <li>流程：切分 → 向量化 → 入库 → 检索拼提示词</li>
+    <li>短板：知识不沉淀、检索错则答案错、文档无关系</li>
+    <li>笔记优先：问答与长期积累共用同一知识层</li>
+  </ol></div>
+  <h2>关联</h2>
+  <div>概念：<span class="lk">[[检索增强生成]]</span> · <span class="lk">[[知识图谱]]</span>　实体：<span class="lk">[[Obsidian]]</span></div>
+`, `<h5>反向链接</h5>
+   <div class="bl">↗ 检索增强生成</div><div class="bl">↗ 知识图谱</div><div class="bl">↗ AI知识库搭建</div>
+   <h5 style="margin-top:26px">大纲</h5>
+   <div class="bl" style="color:#cdd6f4">内容摘要</div><div class="bl" style="color:#cdd6f4">核心观点</div>
+   <div class="bl" style="color:#cdd6f4">关键原文</div><div class="bl" style="color:#cdd6f4">关联</div>`),
+
+// 6 graph
+`<div class="stage" style="background:radial-gradient(900px 600px at 50% 40%,#1e1b4b,#0b1020)">
+  <svg width="1920" height="1080" viewBox="0 0 1920 1080">
+    <defs>
+      <filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    ${(() => {
+      const nodes = [
+        ['AI知识库搭建',960,540,30,'#a78bfa',true],
+        ['检索增强生成',650,380,22,'#60a5fa'], ['知识图谱',1280,380,22,'#60a5fa'],
+        ['Obsidian',960,250,20,'#34d399'], ['向量检索',520,640,16,'#f0abfc'],
+        ['MOC地图页',1300,700,16,'#f0abfc'], ['质量门',1480,520,16,'#fbbf24'],
+        ['RAG综述',430,250,14,'#94a3b8'], ['Web Clipper',1120,150,13,'#94a3b8'],
+        ['切分',330,480,12,'#64748b'], ['Embedding',360,760,12,'#64748b'],
+        ['双向链接',1230,210,12,'#64748b'], ['孤立页检查',1560,700,12,'#64748b'],
+        ['来源摘要',760,720,15,'#94a3b8'], ['概念页',960,820,13,'#64748b'],
+        ['实体页',1130,800,13,'#64748b'], ['raw证据层',700,540,14,'#f87171'],
+        ['增量更新',1600,330,13,'#64748b']
+      ];
+      const idx = Object.fromEntries(nodes.map((n,i)=>[n[0],i]));
+      const edges = [['AI知识库搭建','检索增强生成'],['AI知识库搭建','知识图谱'],['AI知识库搭建','Obsidian'],
+        ['AI知识库搭建','MOC地图页'],['AI知识库搭建','质量门'],['AI知识库搭建','来源摘要'],['AI知识库搭建','raw证据层'],
+        ['检索增强生成','向量检索'],['检索增强生成','RAG综述'],['检索增强生成','切分'],['检索增强生成','Embedding'],
+        ['知识图谱','Obsidian'],['知识图谱','双向链接'],['知识图谱','MOC地图页'],['Obsidian','Web Clipper'],
+        ['质量门','孤立页检查'],['质量门','增量更新'],['来源摘要','概念页'],['来源摘要','实体页'],
+        ['概念页','知识图谱'],['实体页','Obsidian'],['向量检索','切分'],['向量检索','Embedding'],['raw证据层','来源摘要']];
+      let e = edges.map(([a,b])=>{const A=nodes[idx[a]],B=nodes[idx[b]];
+        return `<line x1="${A[1]}" y1="${A[2]}" x2="${B[1]}" y2="${B[2]}" stroke="rgba(167,139,250,.35)" stroke-width="2"/>`;}).join('');
+      e += nodes.map(n=>`<circle cx="${n[1]}" cy="${n[2]}" r="${n[3]}" fill="${n[5]?n[4]:n[4]}" ${n[5]?'filter="url(#glow)"':''} opacity="${n[5]?1:.9}"/>
+        <text x="${n[1]}" y="${n[2]-n[3]-10}" text-anchor="middle" fill="#e2e8f0" font-size="${n[5]?34:24}" font-weight="${n[5]?800:500}" font-family="Microsoft YaHei UI">${n[0]}</text>`).join('');
+      return e;
+    })()}
+  </svg>
+  <div style="position:absolute;left:110px;top:70px;font-size:46px;font-weight:800;color:#e2e8f0">知识不是文件夹，是一张网</div>
+  <div style="position:absolute;left:110px;bottom:60px;font-size:24px;color:#818cf8">Obsidian 关系图谱 · 节点=页面 · 连线=[[双链]] · 体检自动发现孤立节点</div>
+</div>`,
+
+// 7 terminal
+`<div class="stage dark pad">
+  <div class="kicker">QUALITY GATE</div>
+  <h2 class="sec" style="margin-bottom:20px">每批编译完，自动体检、不过当场返工</h2>
+  <div class="term">
+    <div class="termbar"><div class="dot" style="background:#f38ba8;width:14px;height:14px;border-radius:50%"></div>
+      <div class="dot" style="background:#f9e2af;width:14px;height:14px;border-radius:50%"></div>
+      <div class="dot" style="background:#a6e3a1;width:14px;height:14px;border-radius:50%"></div>
+      <div class="ttl">Windows PowerShell — kb.py doctor</div></div>
+    <div class="termbody">
+      <div><span class="ps">PS&gt;</span> <span class="cmd">python scripts\\kb.py doctor</span></div>
+      <div class="dim">[严重] wiki/concepts/知识图谱.md  ->  断链: [[双链]]</div>
+      <div class="dim">[警告] wiki/sources/RAG综述….md  ->  核心观点少于 3 条</div>
+      <div>------------------------------------------------------------</div>
+      <div>体检页面: 7 | <span class="warn">严重 2</span> | 警告 1 | 提示 0　<span class="warn">结论: 未通过质量门（已返工）</span></div>
+      <div style="height:14px"></div>
+      <div><span class="ps">PS&gt;</span> <span class="cmd">python scripts\\kb.py doctor</span></div>
+      <div>------------------------------------------------------------</div>
+      <div>体检页面: 7 | 严重 0 | 警告 0 | 提示 0　<span class="ok">结论: 通过质量门。</span></div>
+    </div>
+  </div>
+</div>`,
+
+// 8 three rules
+`<div class="stage light pad">
+  <div class="kicker" style="color:#4f46e5">LESSONS</div>
+  <h2 class="sec">三条用真实翻车换来的规则</h2>
+  <div class="rules">
+    <div class="rule r1"><div class="big">01</div><h3>raw 永远只读</h3><p>AI 会把数字和日期编得有模有样。原文只追加、不改写，任何结论都能回溯；新资料是新版本，不覆盖旧说法。</p></div>
+    <div class="rule r2"><div class="big">02</div><h3>人机内容分区</h3><p>AI 只许写 AUTO 区块，区块外是你的人工作文。再跑 100 次自动维护，也不会冲掉你写的东西。</p></div>
+    <div class="rule r3"><div class="big">03</div><h3>小批量 + 质量门</h3><p>单批 ≤ 10 篇，断链率 &lt;5%、摘要非占位、索引已更新。不达标当场返工，绝不把 partial 报成完成。</p></div>
+  </div>
+</div>`,
+
+// 9 ending
+`<div class="stage dark pad">
+  <div class="kicker">GET STARTED</div>
+  <h1 class="big" style="font-size:78px">脚手架已打包，<br><span class="grad-text">5 分钟拥有同款知识库</span></h1>
+  <div class="endbox">
+    <div style="font-size:28px;color:#c7d2fe">模板 + AGENTS.md 协议 + 体检脚本 + 提示词，零依赖（Python 标准库）：</div>
+    <div class="ghline">$ git clone https://github.com/TeddyLiu0717/ai-kb-starter.git</div>
+    <div style="font-size:27px;color:#a5b4fc">用 Obsidian 打开文件夹 → 对 AI 说「阅读 AGENTS.md」→ 开始说「入库」「编译」</div>
+  </div>
+  <div style="margin-top:50px;font-size:34px;color:#e2e8f0">👍 觉得有用欢迎点赞 / 收藏 / 评论区交流你的玩法</div>
+</div>`
+];
+
+document.getElementById('stage').outerHTML = scenes[q] || scenes[0];
+</script>
+</body>
+</html>

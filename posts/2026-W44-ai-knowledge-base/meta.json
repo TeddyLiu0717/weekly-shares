@@ -1,0 +1,43 @@
+{
+  "week": "2026-W44",
+  "slug": "ai-knowledge-base",
+  "title": "我让 AI 帮我养知识库：4000 页 Obsidian 知识库全自动搭建手册（附脚手架）",
+  "category": {
+    "id": 9,
+    "name": "技巧分享"
+  },
+  "status": "draft",
+  "created": "2026-10-29",
+  "published_at": null,
+  "forum_topic_id": null,
+  "forum_url": null,
+  "draft_sequence": 8,
+  "files": {
+    "source": "post.md",
+    "online": "post.online.md"
+  },
+  "video": {
+    "inline": "assets/kb-demo-720p.mp4",
+    "master": "assets/kb-demo.mp4",
+    "duration_sec": 45,
+    "forum_short_url": "upload://euKKsofckg9nyPjuCw2zOUTDN1A.mp4"
+  },
+  "assets": [
+    "assets/scene-02.png",
+    "assets/scene-03.png",
+    "assets/scene-04.png",
+    "assets/scene-05.png",
+    "assets/scene-06.png",
+    "assets/scene-07.png",
+    "assets/scene-08.png"
+  ],
+  "extra_assets": [
+    "assets/scene-00.png",
+    "assets/scene-01.png",
+    "assets/scene-09.png",
+    "assets/scenes.html",
+    "assets/build_preview.py"
+  ],
+  "related_repo": "https://github.com/TeddyLiu0717/ai-kb-starter",
+  "tags": ["Obsidian", "知识库", "AI Agent", "自动化", "效率"]
+}

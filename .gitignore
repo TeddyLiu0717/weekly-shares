@@ -1,0 +1,28 @@
+# Local runtime noise
+*.log
+*.tmp
+.tmp/
+.local/
+__pycache__/
+*.pyc
+
+# 凭证与机器本地状态（正常情况下凭证存于 %USERPROFILE%\.trae-forum，此处双保险）
+.trae-forum/
+*.cookie
+cookie.txt
+*.secret.*
+
+# 发布/预览生成物（可由 post.md + assets 重建）
+posts/**/preview.html
+posts/**/preview/
+
+# 大体积下载的工具（ffmpeg 等按需自行获取，不入库）
+tools/bin/
+tools/*.exe
+tools/*.zip
+
+# OS/editor noise
+.DS_Store
+Thumbs.db/
+Thumbs.db
+.obsidian/workspace*.json
